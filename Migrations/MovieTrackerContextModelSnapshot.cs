@@ -23,12 +23,15 @@ namespace MovieWatcher.Server.Migrations
 
                     b.Property<string>("Genre");
 
-                    b.Property<int>("Rating");
+                    b.Property<int>("Rating")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue(0);
 
                     b.Property<string>("Title")
                         .IsRequired();
 
-                    b.Property<DateTime>("WatchedOn");
+                    b.Property<DateTime>("WatchedOn")
+                        .HasColumnType("date");
 
                     b.HasKey("Id");
 

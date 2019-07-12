@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MovieWatcher.Server.Models;
 using MovieWatcher.Server.Services;
@@ -15,11 +16,18 @@ namespace MovieWatcher.Server
 {
     public class Startup
     {
+        public IConfiguration Configuration { get; }
+
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<MovieTrackerContext>(options => options.UseSqlite("Data Source=movietracker.db"));
+            services.AddDbContext<MovieTrackerContext>(options => options.UseSqlite(Configuration.GetConnectionString("LocalDb")));
             services.AddScoped<IMovieTrackerService, MovieTrackerService>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
@@ -67,7 +75,7 @@ namespace MovieWatcher.Server
             app.UseOpenApi();
             app.UseSwaggerUi3();
 
-            app.UseMvcWithDefaultRoute();
+            app.UseMvc();
 
             app.Run(async (context) =>
             {

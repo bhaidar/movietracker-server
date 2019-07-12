@@ -18,7 +18,8 @@ namespace MovieWatcher.Server.Models
             {
                 entity.Property(e => e.Id).ValueGeneratedOnAdd();
                 entity.Property(e => e.Title).IsRequired();
-                entity.Property(e => e.WatchedOn).IsRequired();
+                entity.Property(e => e.WatchedOn).IsRequired().HasColumnType("date");
+                entity.Property(e => e.Rating).HasDefaultValue(0);
             });
 
             modelBuilder.Entity<Movie>().HasData(

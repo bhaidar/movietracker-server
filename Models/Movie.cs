@@ -12,7 +12,6 @@ namespace MovieWatcher.Server.Models
 
         public string Title { get; set; }
 
-        [DataType(DataType.Date)]
         public DateTime WatchedOn {get ;set;}
 
         public string Genre { get; set; }
