@@ -1,12 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MovieWatcher.Server.Models
 {
-    public class MovieTrackerContext : DbContext
+    public class MovieTrackerContext : IdentityDbContext<ApplicationUser>
     {
         public MovieTrackerContext(DbContextOptions<MovieTrackerContext> options)
            : base(options)
@@ -28,7 +26,9 @@ namespace MovieWatcher.Server.Models
                 new Movie() { Id = 3, Title = "The Dark Knight", WatchedOn = new DateTime(2018, 12, 1), Genre = "Drama, Action", Rating = 3 },
                 new Movie() { Id = 4, Title = "The Godfather: Part II ", WatchedOn = new DateTime(2019, 2, 4), Genre = "Drama", Rating = 1 },
                 new Movie() { Id = 5, Title = "The Lord of the Rings: The Return of the King", WatchedOn = new DateTime(2019, 4, 2), Genre = "Adventure, Drama, Fantasy", Rating = 5 },
-                new Movie() { Id = 6, Title = "Pulp Fiction", WatchedOn = new DateTime(2019, 3, 27), Genre = "Crime, Drama", Rating = 3});
+                new Movie() { Id = 6, Title = "Pulp Fiction", WatchedOn = new DateTime(2019, 3, 27), Genre = "Crime, Drama", Rating = 3 });
+
+            base.OnModelCreating(modelBuilder);
         }
 
         public DbSet<Movie> Movies { get; set; }

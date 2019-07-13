@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MovieWatcher.Server.Models;
 
 namespace MovieWatcher.Server.Migrations
 {
     [DbContext(typeof(MovieTrackerContext))]
-    partial class MovieTrackerContextModelSnapshot : ModelSnapshot
+    [Migration("20190713135001_AddUserManagement")]
+    partial class AddUserManagement
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

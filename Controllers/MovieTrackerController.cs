@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MovieWatcher.Server.Models;
 using MovieWatcher.Server.Services;
@@ -11,17 +13,27 @@ using MovieWatcher.Server.Services;
 
 namespace MovieWatcher.Server.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     [ApiConventionType(typeof(DefaultApiConventions))]
-    public class MovieTrackerController : Controller
+    public class MovieTrackerController : ControllerBase
     {
         private readonly IMovieTrackerService _service;
+        private readonly MovieTrackerContext _context;
 
-        public MovieTrackerController(IMovieTrackerService service)
+        public MovieTrackerController(IMovieTrackerService service, MovieTrackerContext context)
         {
             this._service = service;
+            this._context = context;
         }
+
+        [HttpGet("users")]
+        public async Task<ActionResult<IEnumerable<String>>> GetUsers()
+        {
+            return await this._context.Users.Select(u => u.UserName).ToListAsync();
+        }
+
 
         // GET: api/<controller>
         [HttpGet]

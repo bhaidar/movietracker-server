@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using MovieWatcher.Server.Models;
 using MovieWatcher.Server.Services;
 
@@ -29,7 +33,34 @@ namespace MovieWatcher.Server
         {
             services.AddDbContext<MovieTrackerContext>(options => options.UseSqlite(Configuration.GetConnectionString("LocalDb")));
             services.AddScoped<IMovieTrackerService, MovieTrackerService>();
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<MovieTrackerContext>();
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+                    {
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuer = true,
+                            ValidateAudience = true,
+                            ValidateLifetime = true,
+                            ValidateIssuerSigningKey = true,
+
+                            ValidIssuer = "https://localhost:44342",
+                            ValidAudience = "https://localhost:44342",
+                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("MySp$cialPassw0rd"))
+                        };
+                        options.SaveToken = true;
+                        options.RequireHttpsMetadata = true;
+                    });
 
             // Register the Swagger services
             services.AddSwaggerDocument(config =>
@@ -75,12 +106,12 @@ namespace MovieWatcher.Server
             app.UseOpenApi();
             app.UseSwaggerUi3();
 
-            app.UseMvc();
+            // Seed database with users
+            SeedUsers.Initialize(app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope().ServiceProvider);
 
-            app.Run(async (context) =>
-            {
-                await context.Response.WriteAsync("Hello World!");
-            });
+            app.UseAuthentication();
+
+            app.UseMvc();
         }
     }
 }
